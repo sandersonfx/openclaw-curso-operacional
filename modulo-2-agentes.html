@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 2 — Estrutura de Agentes | OpenClaw Operacional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c10;--card:#111318;--card-hover:#16181f;
+    --text:#e0e2e6;--text-muted:#8a8d96;
+    --green:#00ff66;--cyan:#00ffff;--yellow:#fbbf24;--blue:#60a5fa;--red:#f87171;
+    --border:#1e2028;--border-green:rgba(0,255,102,0.15);
+    --glow:0 0 20px rgba(0,255,102,0.08);--code:#0d0f13;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',-apple-system,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+  .container{max-width:820px;margin:0 auto;padding:2rem 1.5rem}
+  h1{font-size:2rem;color:#fff;margin-bottom:.5rem}
+  h2{font-size:1.35rem;color:#fff;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+  h3{font-size:1.05rem;color:var(--green);margin:1.5rem 0 .5rem}
+  p{margin:.8rem 0;color:var(--text)}
+  .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:2rem}
+  .badge{
+    display:inline-block;background:rgba(0,255,102,0.12);color:var(--green);
+    border:1px solid rgba(0,255,102,0.2);padding:.2rem .7rem;border-radius:100px;
+    font-size:.75rem;font-weight:600;margin-right:.4rem;
+  }
+  .badge.blue{background:rgba(96,165,250,0.12);color:var(--blue);border-color:rgba(96,165,250,0.2)}
+  .badge.yellow{background:rgba(251,191,36,0.12);color:var(--yellow);border-color:rgba(251,191,36,0.2)}
+  pre{
+    background:var(--code);padding:1rem 1.2rem;border-radius:10px;overflow-x:auto;
+    font-size:.85rem;border:1px solid var(--border);margin:1rem 0;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+  }
+  code{font-family:'JetBrains Mono','Fira Code',monospace;font-size:.82rem}
+  pre code{color:#c9d1d9;font-size:.82rem}
+  .cmd{color:var(--green)}.file{color:var(--blue)}.comment{color:#5a5d66}
+  ul,ol{padding-left:1.5rem;margin:.8rem 0}
+  li{margin:.3rem 0;color:var(--text)}
+  .step{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:1.3rem;margin:1rem 0;transition:border-color .25s;
+  }
+  .step:hover{border-color:var(--border-green)}
+  .step h3{margin-top:0}
+  .checklist{list-style:none;padding:0}
+  .checklist li{padding:.4rem 0;display:flex;align-items:flex-start;gap:.5rem}
+  .checklist li::before{content:'☐';color:var(--yellow);font-size:1.1rem}
+  .nav{
+    display:flex;justify-content:space-between;margin-top:3rem;
+    padding-top:1.5rem;border-top:1px solid var(--border);
+  }
+  .nav a{color:var(--green);text-decoration:none;font-weight:600;font-size:.9rem;transition:opacity .2s}
+  .nav a:hover{opacity:.8}
+  .note{
+    background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);
+    border-radius:10px;padding:.9rem 1.1rem;margin:1rem 0;
+  }
+  .note strong{color:var(--yellow)}
+  .note.info{border-color:rgba(96,165,250,0.15);background:rgba(96,165,250,0.05)}
+  .note.info strong{color:var(--blue)}
+  .progress-bar{
+    display:flex;gap:3px;margin-bottom:2rem;
+    background:var(--card);border-radius:8px;padding:.5rem;
+    border:1px solid var(--border);
+  }
+  .progress-bar .step-label{font-size:.7rem;color:var(--text-muted);margin-bottom:4px}
+  .progress-dots{display:flex;gap:3px}
+  .progress-dots div{
+    height:3px;background:#2a2d35;border-radius:2px;flex:1;transition:background .3s;
+  }
+  .progress-dots div.active{background:var(--green)}
+  .progress-dots div.done{background:rgba(0,255,102,0.4)}
+  a{color:var(--cyan)}
+  table{
+    width:100%;border-collapse:collapse;margin:1rem 0;
+    font-size:.85rem;
+  }
+  th,td{
+    border:1px solid var(--border);padding:.6rem .8rem;text-align:left;
+  }
+  th{background:var(--card);color:#fff;font-family:'Space Grotesk',sans-serif;}
+  .diagram{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:1.5rem;text-align:center;margin:1rem 0;font-family:monospace;line-height:2.2;
+    font-size:.9rem;
+  }
+  .tab-container{display:flex;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
+  .tab{
+    background:var(--card);border:1px solid var(--border);padding:.4rem .9rem;
+    border-radius:8px;font-size:.8rem;color:var(--text-muted);
+  }
+  .tab.active{background:rgba(0,255,102,0.12);color:var(--green);border-color:rgba(0,255,102,0.25);font-weight:600}
+  .example-box{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:1.2rem;margin:.8rem 0;
+  }
+  .example-box h4{color:var(--cyan);margin-bottom:.5rem;font-size:.95rem}
+  .example-box ul{margin-top:.3rem}
+  .example-box li{font-size:.88rem}
+  .highlight{background:rgba(0,255,102,0.04);border:1px solid var(--border-green);border-radius:8px;padding:.6rem 1rem;margin:.5rem 0}
+</style>
+<style>.code-block{position:relative}.code-block:hover .copy-btn{opacity:1}.copy-btn{position:absolute;top:8px;right:8px;background:rgba(0,255,102,.1);color:var(--green);border:1px solid rgba(0,255,102,.2);border-radius:6px;padding:4px 10px;font-size:.7rem;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;opacity:0;transition:opacity .2s;backdrop-filter:blur(4px);z-index:2}.copy-btn:hover{background:rgba(0,255,102,.2)}.copy-btn.copied{background:rgba(0,255,102,.25);color:#fff}</style>
+</head>
+<body>
+<div class="container">
+
+<div class="progress-bar">
+  <div style="flex:1;opacity:.5">
+    <div class="step-label">M1 · Setup</div>
+    <div class="progress-dots"><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div></div>
+  </div>
+  <div style="flex:1">
+    <div class="step-label">M2 · Agentes</div>
+    <div class="progress-dots"><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">M3 · Skills</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">M4 · Operação</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">Bônus · Deploy</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+</div>
+
+<h1>🏗️ Módulo 2 — Estrutura de Agentes</h1>
+<p class="meta"><span class="badge">25 min</span> <span class="badge blue">Estrutura</span> Nível: Iniciante</p>
+
+<h2>O que você vai construir</h2>
+<p>Uma <strong>equipe de agentes de IA</strong> — cada um especialista na sua área, orquestrados pelo COO.</p>
+
+<div class="step">
+<h3>🎯 Objetivos</h3>
+<ol>
+  <li>Entender o modelo COO + Especialistas</li>
+  <li>Criar AGENTS.md com 2-3 agentes para o seu negócio</li>
+  <li>Definir autonomia com clareza (o que pode, o que confirma, o que nunca faz)</li>
+  <li>Configurar roteamento de comandos</li>
+  <li>Testar delegação entre agentes</li>
+</ol>
+</div>
+
+<h2>1. Por que Múltiplos Agentes?</h2>
+<p>Um COO sozinho faz tudo, mas faz meia-boca. A arquitetura certa é <strong>COO orquestra, especialistas executam</strong>.</p>
+
+<div class="diagram">
+  <strong>VOCÊ</strong> (empreendedor)<br>
+  &nbsp;&nbsp;│<br>
+  &nbsp;&nbsp;└── <strong>COO DIGITAL</strong> (orquestrador)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>AGENTE DE MARKETING</strong> → Tráfego + Social<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>AGENTE DE VENDAS</strong> → CRM + Follow-up<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <strong>AGENTE DEV</strong> → Código + Infra
+</div>
+
+<div class="note">
+<strong>🎯 Regra de ouro:</strong> Se um agente pode fazer sozinho, não passa pelo COO. COO só entra quando precisa decidir, coordenar ou escalar. Isso reduz gargalo e acelera tudo.
+</div>
+
+<h2>2. Definindo quem faz o quê</h2>
+<p>Antes de criar arquivos, pense na sua operação atual. Quais áreas sugam seu tempo?</p>
+
+<div class="tab-container">
+  <span class="tab active">E-commerce</span>
+  <span class="tab">Agência</span>
+  <span class="tab">SaaS</span>
+  <span class="tab">Serviços</span>
+  <span class="tab">Infoproduto</span>
+</div>
+
+<div class="example-box">
+<h4>🛍️ E-commerce / Loja Online</h4>
+<p><strong>3 agentes essenciais:</strong></p>
+<ul>
+  <li><strong>ANA — Tráfego Pago:</strong> Meta Ads, Google Ads, TikTok. Otimiza ROAS, pausa campanha com CPA alto, testa audiências</li>
+  <li><strong>BIA — Atendimento e Vendas:</strong> WhatsApp, Instagram, pós-venda. Responde dúvidas, envia tracking, dispara recuperação de carrinho</li>
+  <li><strong>LEO — Dev e Infra:</strong> Loja (Shopify/WooCommerce), integrações, landing pages, uptime</li>
+</ul>
+</div>
+
+<div class="example-box">
+<h4>📱 Agência de Marketing</h4>
+<ul>
+  <li><strong>NINA — Gestão de Clientes:</strong> Onboarding, relatórios, check-ins, renovação</li>
+  <li><strong>LUCA — Criativos:</strong> Briefing, roteiro, copy, revisão</li>
+  <li><strong>MAYA — Dados e Analytics:</strong> Dashboards, métricas, insights</li>
+</ul>
+</div>
+
+<div class="example-box">
+<h4>💻 SaaS / Startup</h4>
+<ul>
+  <li><strong>ZOE — Produto:</strong> Roadmap, feedback, priorização, métricas</li>
+  <li><strong>LEO — Dev e Infra:</strong> Implementação, deploy, monitoramento</li>
+  <li><strong>NINA — Sucesso do Cliente:</strong> Onboarding, churn, upsell, NPS</li>
+  <li><strong>ANA — Growth:</strong> Aquisição, experimentos, funis, SEO</li>
+</ul>
+</div>
+
+<div class="example-box">
+<h4>💇 Serviços / Salão / Consultório</h4>
+<ul>
+  <li><strong>NINA — Agenda e Clientes:</strong> Ocupação, encaixes, reativação</li>
+  <li><strong>ANA — Marketing Local:</strong> Instagram, Google Meu Negócio, anúncios</li>
+  <li><strong>MAYA — Financeiro:</strong> Fluxo de caixa, comissões, margem</li>
+</ul>
+</div>
+
+<div class="example-box">
+<h4>🎓 Infoproduto / Criador de Conteúdo</h4>
+<ul>
+  <li><strong>BIA — Conteúdo:</strong> Calendário editorial, roteiros, SEO</li>
+  <li><strong>ANA — Tráfego e Vendas:</strong> Lançamentos, funil, captura</li>
+  <li><strong>NINA — Comunidade:</strong> Grupo, suporte, moderação</li>
+</ul>
+</div>
+
+<div class="note info">
+<strong>💡 Regra simples:</strong> Se você gasta mais de 2h/semana numa área, ela merece um agente. Comece com 2. Não crie 10 de uma vez.
+</div>
+
+<h2>3. A anatomia de um agente bem definido</h2>
+<p>Um agente bom tem <strong>5 blocos</strong> no AGENTS.md:</p>
+
+<pre class="code-block">
+<button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="comment">## ANA — Traffic Manager (Tráfego Pago)</span>
+
+<span class="comment">### Papel</span>
+Gerencia campanhas de tráfego pago (Meta Ads, Google Ads, TikTok).
+
+<span class="comment">### Responsabilidades</span>
+- Gerenciar campanhas de tráfego pago
+- Otimizar CPA e ROAS diariamente
+- A/B testar audiences, criativos, landing pages
+- Reportar ROI/performance diariamente
+
+<span class="comment">### Autonomia</span>
+<span class="comment">ANA pode fazer sozinha:</span>
+- Pausar campanha com CPA alto
+- Testar nova audiência (dentro do orçamento)
+- Escalar campanha que está convertendo bem
+
+<span class="comment">ANA deve confirmar antes de:</span>
+- Aumentar budget total em mais de 50%
+- Mudar criativo principal
+- Mudar público-alvo estratégico
+
+<span class="comment">### Métricas</span>
+- CPA: Target menor que R$X
+- ROAS: Target maior que 3x
+- CTR: Target maior que 2%
+
+<span class="comment">### Stack / Ferramentas</span>
+- Meta Ads API, Google Ads API
+- Pixel tracking e conversões</code></pre>
+
+<div class="note">
+<strong>🔥 Dica:</strong> Autonomia bem definida é o que separa agente útil de agente perigoso. Sempre use verbos de ação: "pode pausar", "deve confirmar", "nunca deleta".
+</div>
+
+<h2>4. Matriz de Autonomia</h2>
+<table>
+  <tr><th>Nível</th><th>Significado</th><th>Exemplo real</th></tr>
+  <tr><td>🟢 Pode</td><td>Faz sem perguntar</td><td>Pausar anúncio se CPA > R$100</td></tr>
+  <tr><td>🟡 Confirma</td><td>Faz mas pede OK antes</td><td>Aumentar budget total em +50%</td></tr>
+  <tr><td>🔴 Nunca</td><td>Nem sugere</td><td>Demitir alguém, pagar fornecedor</td></tr>
+</table>
+
+<div class="note">
+<strong>⚠️ Cuidado:</strong> Autonomia vaga gera problema. "Pode tomar decisões" é perigoso. "Pode pausar campanha se CPA > R$100 por 3 dias seguidos" é seguro.
+</div>
+
+<h2>5. Criando um Novo Agente</h2>
+<pre class="code-block">
+<button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="comment"># 1. Criar pasta do agente</span>
+<span class="cmd">mkdir -p ~/.openclaw/agents/nome-do-agente/agent</span>
+
+<span class="comment"># 2. Criar SOUL.md do agente</span>
+<span class="cmd">nano ~/.openclaw/agents/nome-do-agente/agent/SOUL.md</span>
+
+<span class="comment"># 3. Adicionar ao AGENTS.md do COO</span>
+<span class="cmd">nano ~/.openclaw/workspace/AGENTS.md</span>
+
+<span class="comment"># 4. Reiniciar o gateway</span>
+<span class="cmd">openclaw gateway restart</span>
+
+<span class="comment"># 5. Testar: mande um comando no Telegram</span>
+<span class="comment">/nomedoagente Faça X</span></code></pre>
+
+<h2>6. Delegação Automática</h2>
+<p>Com o AGENTS.md bem definido, o COO sabe quando delegar automaticamente.</p>
+<p><strong>Exemplo:</strong> Você manda "Como tá o CPA das campanhas essa semana?" → COO detecta tráfego → delega pra ANA → ANA consulta dados, responde → COO repassa com contexto.</p>
+<p><strong>Outro:</strong> "O site caiu?" → COO delega pra LEO → verifica uptime, logs → responde "Site no ar, último deploy foi X".</p>
+
+<h2>✅ Checklist do Módulo 2</h2>
+<ul class="checklist">
+  <li>AGENTS.md criado com 2-3 agentes específicos pro seu negócio</li>
+  <li>Cada agente tem: Papel, Responsabilidades, Autonomia, Métricas</li>
+  <li>Autonomia definida com ações concretas (não genéricas)</li>
+  <li>Roteamento de comandos testado</li>
+  <li>COO delega corretamente para especialistas</li>
+</ul>
+
+<h2>🔧 Troubleshooting</h2>
+<p><strong>"COO não delega":</strong> revise o AGENTS.md. As responsabilidades precisam ser específicas. "Marketing" é vago. "Meta Ads — otimização de CPA e ROAS" é claro.</p>
+<p><strong>"Agente não responde":</strong> verifique se a pasta foi criada em <code>~/.openclaw/agents/</code> e reiniciou o gateway.</p>
+<p><strong>"Muitos agentes":</strong> comece com 1 COO + 2 agentes no máximo.</p>
+
+<div class="nav">
+  <a href="modulo-1-setup.html">← Módulo 1: Setup</a>
+  <a href="modulo-3-skills.html">Próximo: Módulo 3 — Skills Práticas →</a>
+</div>
+
+</div>
+<script>function copyCode(b){const p=b.closest(".code-block"),c=p.querySelector("code"),t=c.textContent.replace(/^#.*$/gm,"").replace(/^s+/gm,"").trim();navigator.clipboard.writeText(t).then(()=>{b.textContent="✅ Copiado!";b.classList.add("copied");setTimeout(()=>{b.textContent="📋 Copiar";b.classList.remove("copied")},2000)}).catch(()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();document.execCommand("copy");document.body.removeChild(a);b.textContent="✅ Copiado!";setTimeout(()=>{b.textContent="📋 Copiar"},2000)})}</script>
+</body>
+</html>

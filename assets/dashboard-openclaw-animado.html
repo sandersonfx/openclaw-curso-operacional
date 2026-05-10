@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dashboard OpenClaw — Animado</title>
+<style>
+  :root{--bg:#0a0c10;--card:rgba(255,255,255,.03);--text:#e0e2e6;--muted:#8a8d96;--green:#00ff66;--cyan:#00ffff;--border:rgba(255,255,255,.06)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:Inter,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    width:1080px;height:1080px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto;
+  }
+  .dashboard{
+    width:880px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .panel{
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+  }
+  .full{grid-column:1/-1}
+  .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+  .value{font-size:42px;font-weight:800;color:#fff}
+  .value.green{color:var(--green)}
+  .stat-row{display:flex;gap:12px;align-items:center;margin:8px 0}
+  .stat-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite}
+  .stat-dot:nth-last-child(2){animation-delay:.3s}
+  .stat-dot:nth-last-child(3){animation-delay:.6s}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--green)}50%{opacity:.3;box-shadow:0 0 2px var(--green)}}
+  .bar-wrap{background:rgba(255,255,255,.06);border-radius:999px;height:6px;margin:6px 0;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--cyan));animation:fillBar 3s ease-in-out infinite}
+  @keyframes fillBar{0%{width:65%}50%{width:92%}100%{width:65%}}
+  .bar-fill.slow{animation-duration:4s;animation-delay:.5s}
+  .bar-fill.fast{animation-duration:2s;animation-delay:1s}
+  .bar-fill.mid{animation-duration:3.5s;animation-delay:.2s}
+  .terminal{
+    background:rgba(0,0,0,.3);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--green);
+    line-height:1.8;
+    overflow:hidden;
+    position:relative;
+  }
+  .terminal .prompt{color:var(--cyan)}
+  .terminal .output{opacity:.7}
+  .typing{overflow:hidden;white-space:nowrap;animation:typing 3s steps(40) infinite}
+  @keyframes typing{0%{width:0}30%{width:100%}70%{width:100%}100%{width:0}}
+  .card-list{display:grid;gap:8px}
+  .mini-card{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--border);
+    border-radius:12px;
+  }
+  .mini-card .icon{width:36px;height:36px;border-radius:10px;background:rgba(0,255,102,.08);display:grid;place-items:center;font-size:16px}
+  .mini-card .info{flex:1}
+  .mini-card .info strong{display:block;color:#fff;font-size:13px}
+  .mini-card .info span{color:var(--muted);font-size:11px}
+  .mini-card .badge{
+    padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;
+    animation:statusPulse 2s ease-in-out infinite;
+  }
+  .badge.online{background:rgba(0,255,102,.12);color:var(--green)}
+  .badge.warning{background:rgba(0,255,255,.12);color:var(--cyan)}
+  @keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.6}}
+  .counter{font-size:28px;font-weight:800}
+  .counter::after{content:counter(leads);animation:count 4s steps(40) infinite}
+  @property --n{syntax:"<integer>";initial-value:0;inherits:false}
+  @keyframes count{from{--n:0}to{--n:1847}}
+  .header-row{display:flex;justify-content:space-between;align-items:center}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--cyan));display:grid;place-items:center;font-size:13px;color:#000;font-weight:800}
+  .fluent-num{font-family:'Space Grotesk',monospace}
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <!-- TOP LEFT: Live Status -->
+  <div class="panel">
+    <div class="label">🧠 COO Digital — Status</div>
+    <div class="value fluent-num" style="font-size:48px">Online</div>
+    <div style="color:var(--green);font-size:14px;margin-bottom:12px">● executando há 14 dias</div>
+    <div class="stat-row">
+      <div class="stat-dot"></div><span style="font-size:13px;color:var(--muted)">Agente Financeiro</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat-dot"></div><span style="font-size:13px;color:var(--muted)">Agente Social Media</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat-dot"></div><span style="font-size:13px;color:var(--muted)">Agente Operações</span>
+    </div>
+  </div>
+
+  <!-- TOP RIGHT: KPIs -->
+  <div class="panel">
+    <div class="label">📊 Hoje</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px">
+      <div>
+        <div style="font-size:12px;color:var(--muted)">Leads</div>
+        <div class="value green fluent-num" style="font-size:36px">247</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted)">Tarefas</div>
+        <div class="value fluent-num" style="font-size:36px">18</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted)">Follow-ups</div>
+        <div class="value fluent-num" style="font-size:36px;color:var(--cyan)">43</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted)">Relatórios</div>
+        <div class="value fluent-num" style="font-size:36px;color:var(--green)">6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM LEFT: Progress -->
+  <div class="panel">
+    <div class="label">⚡ Execução do Dia</div>
+    <div style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span>Follow-up</span><span style="color:var(--green)">92%</span></div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:92%"></div></div>
+    </div>
+    <div style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span>Classificação de leads</span><span style="color:var(--cyan)">78%</span></div>
+      <div class="bar-wrap"><div class="bar-fill slow" style="width:78%"></div></div>
+    </div>
+    <div style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span>Relatórios</span><span style="color:var(--green)">100%</span></div>
+      <div class="bar-wrap"><div class="bar-fill fast" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM RIGHT: Terminal + Agents -->
+  <div class="panel">
+    <div class="label">🖥️ Terminal — Agentes Ativos</div>
+    <div class="terminal">
+      <span class="prompt">coo@openclaw:~$</span> <span class="output">heartbeat check...</span><br>
+      <span class="output">├─ financeiro: relatório diário ✅</span><br>
+      <span class="output">├─ social-media: comentários analisados</span><br>
+      <span class="output">├─ operações: 43 follow-ups enviados</span><br>
+      <span class="prompt">coo@openclaw:~$</span> <span class="typing" style="display:inline-block">next</span>
+    </div>
+  </div>
+
+  <!-- FULL BOTTOM: Mini agent cards -->
+  <div class="panel full">
+    <div class="label">🤖 Agentes em Execução</div>
+    <div class="card-list" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="mini-card">
+        <div class="icon">💳</div>
+        <div class="info"><strong>Financeiro</strong><span>Relatório diário + alertas</span></div>
+        <div class="badge online">ativo</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">📱</div>
+        <div class="info"><strong>Social Media</strong><span>Comentários + relatórios</span></div>
+        <div class="badge online">ativo</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">📋</div>
+        <div class="info"><strong>Operações</strong><span>Follow-up + classificação</span></div>
+        <div class="badge warning">processando</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 4 — Operação Diária | OpenClaw Operacional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c10;--card:#111318;--card-hover:#16181f;
+    --text:#e0e2e6;--text-muted:#8a8d96;
+    --green:#00ff66;--cyan:#00ffff;--yellow:#fbbf24;--blue:#60a5fa;--red:#f87171;
+    --border:#1e2028;--border-green:rgba(0,255,102,0.15);
+    --glow:0 0 20px rgba(0,255,102,0.08);--code:#0d0f13;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+  .container{max-width:820px;margin:0 auto;padding:2rem 1.5rem}
+  h1{font-size:2rem;color:#fff;margin-bottom:.5rem}
+  h2{font-size:1.35rem;color:#fff;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+  h3{font-size:1.05rem;color:var(--green);margin:1.5rem 0 .5rem}
+  p{margin:.8rem 0;color:var(--text)}
+  .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:2rem}
+  .badge{
+    display:inline-block;background:rgba(0,255,102,0.12);color:var(--green);
+    border:1px solid rgba(0,255,102,0.2);padding:.2rem .7rem;border-radius:100px;
+    font-size:.75rem;font-weight:600;margin-right:.4rem;
+  }
+  .badge.blue{background:rgba(96,165,250,0.12);color:var(--blue);border-color:rgba(96,165,250,0.2)}
+  pre{
+    background:var(--code);padding:1rem 1.2rem;border-radius:10px;overflow-x:auto;
+    font-size:.85rem;border:1px solid var(--border);margin:1rem 0;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+  }
+  code{font-family:'JetBrains Mono','Fira Code',monospace;font-size:.82rem}
+  pre code{color:#c9d1d9;font-size:.82rem}
+  .cmd{color:var(--green)}.file{color:var(--blue)}.comment{color:#5a5d66}
+  ul,ol{padding-left:1.5rem;margin:.8rem 0}
+  li{margin:.3rem 0;color:var(--text)}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem;margin:1rem 0}
+  .step:hover{border-color:var(--border-green)}
+  .step h3{margin-top:0}
+  .checklist{list-style:none;padding:0}
+  .checklist li{padding:.4rem 0;display:flex;align-items:flex-start;gap:.5rem}
+  .checklist li::before{content:'☐';color:var(--yellow);font-size:1.1rem}
+  .nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+  .nav a{color:var(--green);text-decoration:none;font-weight:600;font-size:.9rem;transition:opacity .2s}
+  .nav a:hover{opacity:.8}
+  .note{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:10px;padding:.9rem 1.1rem;margin:1rem 0}
+  .note strong{color:var(--yellow)}
+  .note.info{border-color:rgba(96,165,250,0.15);background:rgba(96,165,250,0.05)}
+  .note.info strong{color:var(--blue)}
+  .note.danger{border-color:rgba(248,113,113,0.15);background:rgba(248,113,113,0.05)}
+  .note.danger strong{color:var(--red)}
+  .progress-bar{display:flex;gap:3px;margin-bottom:2rem;background:var(--card);border-radius:8px;padding:.5rem;border:1px solid var(--border)}
+  .progress-bar .step-label{font-size:.7rem;color:var(--text-muted);margin-bottom:4px}
+  .progress-dots{display:flex;gap:3px}
+  .progress-dots div{height:3px;background:#2a2d35;border-radius:2px;flex:1;transition:background .3s}
+  .progress-dots div.active{background:var(--green)}
+  .progress-dots div.done{background:rgba(0,255,102,0.4)}
+  a{color:var(--cyan)}
+  table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+  th,td{border:1px solid var(--border);padding:.6rem .8rem;text-align:left}
+  th{background:var(--card);color:#fff;font-family:'Space Grotesk',sans-serif}
+  .timeline{position:relative;padding-left:2rem;margin:1.5rem 0}
+  .timeline::before{content:'';position:absolute;left:.5rem;top:0;bottom:0;width:2px;background:var(--border)}
+  .timeline-item{position:relative;margin-bottom:1.5rem}
+  .timeline-item::before{content:'';position:absolute;left:-1.65rem;top:.3rem;width:12px;height:12px;border-radius:50%;border:2px solid var(--green);background:var(--bg)}
+  .timeline-item .time{color:var(--green);font-weight:700;font-size:.9rem}
+  .highlight{background:rgba(0,255,102,0.04);border:1px solid var(--border-green);border-radius:8px;padding:.6rem 1rem;margin:.5rem 0}
+</style>
+<style>.code-block{position:relative}.code-block:hover .copy-btn{opacity:1}.copy-btn{position:absolute;top:8px;right:8px;background:rgba(0,255,102,.1);color:var(--green);border:1px solid rgba(0,255,102,.2);border-radius:6px;padding:4px 10px;font-size:.7rem;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;opacity:0;transition:opacity .2s;backdrop-filter:blur(4px);z-index:2}.copy-btn:hover{background:rgba(0,255,102,.2)}.copy-btn.copied{background:rgba(0,255,102,.25);color:#fff}</style>
+</head>
+<body>
+<div class="container">
+
+<div class="progress-bar">
+  <div style="flex:1;opacity:.5"><div class="step-label">M1 · Setup</div><div class="progress-dots"><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div></div></div>
+  <div style="flex:1;opacity:.5"><div class="step-label">M2 · Agentes</div><div class="progress-dots"><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div></div></div>
+  <div style="flex:1;opacity:.5"><div class="step-label">M3 · Skills</div><div class="progress-dots"><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div></div></div>
+  <div style="flex:1"><div class="step-label">M4 · Operação</div><div class="progress-dots"><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div></div></div>
+  <div style="flex:1;opacity:.35"><div class="step-label">Bônus · Deploy</div><div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div></div>
+</div>
+
+<h1>⚡ Módulo 4 — Operação Diária</h1>
+<p class="meta"><span class="badge">20 min</span> <span class="badge blue">Operação</span> Nível: Iniciante</p>
+
+<h2>O que você vai construir</h2>
+<p>A <strong>rotina diária do seu COO</strong> — checkpoint manhã/noite, sistema de memória, alertas e autonomia progressiva.</p>
+
+<div class="step">
+<h3>🎯 Objetivos</h3>
+<ol>
+  <li>Configurar o Daily Checkpoint (manhã e noite)</li>
+  <li>Dominar o ciclo de memória (extrair antes de compactar)</li>
+  <li>Ativar alertas automáticos</li>
+  <li>Primeira semana de operação real</li>
+</ol>
+</div>
+
+<h2>1. Daily Checkpoint</h2>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="time">🌅 07:00 — Checkpoint da Manhã</div>
+    <ol>
+      <li>Qual o foco principal hoje?</li>
+      <li>Top 3 prioridades?</li>
+      <li>Algum bloqueador?</li>
+      <li>Precisa delegar algo?</li>
+      <li>Alguma decisão pendente?</li>
+      <li>Reunião ou compromisso importante?</li>
+      <li>Meta do dia?</li>
+      <li>Precisa de mim pra algo específico?</li>
+    </ol>
+  </div>
+  <div class="timeline-item">
+    <div class="time">🌙 21:00 — Checkpoint da Noite</div>
+    <ol>
+      <li>O que foi feito vs planejado?</li>
+      <li>Onde perdeu tempo?</li>
+      <li>1 coisa boa do dia (gratidão)</li>
+      <li>3 ações prioritárias pra amanhã</li>
+      <li>Produtividade de 0-10?</li>
+    </ol>
+  </div>
+</div>
+
+<div class="highlight">
+<strong>🎯 Benefício:</strong> Em 1 semana, seu COO tem dados pra identificar padrões — onde você perde tempo, o que sempre fica pra depois, qual dia é mais produtivo.
+</div>
+
+<h2>2. Sistema de Memória</h2>
+
+<div class="note danger">
+<strong>⚠️ NUNCA COMPACTAR SEM EXTRAIR PRIMEIRO.</strong> Se não estiver em arquivo, não existe na próxima sessão.
+</div>
+
+<h3>Arquivos de memória</h3>
+<table>
+  <tr><th>Arquivo</th><th>O que guarda</th><th>Quando atualizar</th></tr>
+  <tr><td><code>MEMORY.md</code></td><td>Estado atual, métricas, agentes</td><td>Quando algo MUDAR</td></tr>
+  <tr><td><code>memory/context/decisions.md</code></td><td>Decisões permanentes</td><td>Ao tomar decisão</td></tr>
+  <tr><td><code>memory/context/lessons.md</code></td><td>Erros e acertos</td><td>Ao aprender algo</td></tr>
+  <tr><td><code>memory/context/pending.md</code></td><td>O que tá travado</td><td>Quando surgir bloqueio</td></tr>
+  <tr><td><code>memory/projects/*.md</code></td><td>Status de cada projeto</td><td>Semanal</td></tr>
+</table>
+
+<h3>Checklist de Extração</h3>
+<ol>
+  <li>Extrair decisões → <code>memory/context/decisions.md</code></li>
+  <li>Extrair lições → <code>memory/context/lessons.md</code></li>
+  <li>Extrair pendências → <code>memory/context/pending.md</code></li>
+  <li>Atualizar projetos → <code>memory/projects/*.md</code></li>
+  <li>Atualizar MEMORY.md</li>
+  <li><strong>Só depois:</strong> compactar contexto</li>
+</ol>
+
+<h2>3. HEARTBEAT.md</h2>
+<pre class="code-block">
+<button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="comment"># HEARTBEAT.md</span>
+
+<span class="comment">## Checklist de consolidação</span>
+1. verificar se existe algo impactando faturamento
+2. revisar pendências
+3. atualizar projetos ativos
+4. promover decisões e lições para os arquivos
+
+<span class="comment">## Crons de proteção</span>
+- Watchdog (15 min): monitora crons, retry 3x
+- Backup (03:30): backup workspace + push git
+- Security audit (domingo): auditoria semanal</code></pre>
+
+<h2>4. Alertas Automáticos</h2>
+<table>
+  <tr><th>Alerta</th><th>Gatilho</th><th>Severidade</th></tr>
+  <tr><td>Faturamento baixo</td><td>Projeção do mês < 85% da meta</td><td>🔴 Imediato</td></tr>
+  <tr><td>Custo anormal</td><td>Variação > 15% em qualquer linha</td><td>🟡 Monitorar</td></tr>
+  <tr><td>Ocupação baixa</td><td>Agenda < 60% nos próximos 7 dias</td><td>🟡 Monitorar</td></tr>
+  <tr><td>Cron falhou</td><td>3 tentativas sem sucesso</td><td>🔴 Imediato</td></tr>
+</table>
+
+<h2>5. Primeira Semana Real</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="time">Dia 1-2 — Conhecer</div>
+    <p>COO aprende o negócio. Você responde perguntas. Skills são carregadas. Memória começa a construir.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Dia 3-4 — Sugerir</div>
+    <p>COO começa a fazer sugestões baseadas nos dados. Feedback loop ativo.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time">Dia 5-7 — Operar</div>
+    <p>COO opera com autonomia. Daily checkpoints fluindo. Alertas automáticos.</p>
+  </div>
+</div>
+
+<div class="note">
+<strong>🔥 O segredo:</strong> Use o COO todo dia. Um COO usado 1x por semana é um assistente glorificado.
+</div>
+
+<h2>6. Sistema Proteção</h2>
+<table>
+  <tr><th>Proteção</th><th>Problema que previne</th></tr>
+  <tr><td>🛡️ Watchdog</td><td>Cron quebrado por semanas sem ninguém ver</td></tr>
+  <tr><td>🔄 Feedback Loop</td><td>COO repete sugestão já rejeitada</td></tr>
+  <tr><td>💰 Cost Tracking</td><td>Gasto com API explode sem controle</td></tr>
+  <tr><td>🔍 Security Audit</td><td>Vulnerabilidade fica meses sem detectar</td></tr>
+  <tr><td>💾 Backup Pré-Mudança</td><td>Deploy quebra e não tem rollback</td></tr>
+</table>
+
+<h2>✅ Checklist do Módulo 4</h2>
+<ul class="checklist">
+  <li>Daily Checkpoint configurado no SOUL.md</li>
+  <li>MEMORY.md com estado atual do negócio</li>
+  <li>Arquivos de contexto criados (decisions, lessons, pending)</li>
+  <li>HEARTBEAT.md com rotina de consolidação</li>
+  <li>Alertas automáticos definidos</li>
+  <li>Sistema proteção ativo</li>
+</ul>
+
+<h2>🎉 Você terminou o curso!</h2>
+<p>Seu COO digital está operando. O que muda a partir de agora:</p>
+<ul>
+  <li>✅ Você tem clareza todo dia (checkpoint manhã/noite)</li>
+  <li>✅ Decisões são registradas e não se perdem</li>
+  <li>✅ Problemas são detectados antes de virarem crise</li>
+  <li>✅ Delegação acontece de forma natural</li>
+  <li>✅ Você sai da operação e vai pra estratégia</li>
+</ul>
+
+<div class="note info">
+<strong>🚀 Próximo passo:</strong> Módulo Bônus — Deploy 24/7. Tire o COO do seu computador e coloque na nuvem.
+</div>
+
+<div class="nav">
+  <a href="modulo-3-skills.html">← Módulo 3: Skills</a>
+  <a href="modulo-5-bonus-deploy.html">Próximo: Módulo Bônus — Deploy 24/7 →</a>
+</div>
+
+</div>
+<script>function copyCode(b){const p=b.closest(".code-block"),c=p.querySelector("code"),t=c.textContent.replace(/^#.*$/gm,"").replace(/^s+/gm,"").trim();navigator.clipboard.writeText(t).then(()=>{b.textContent="✅ Copiado!";b.classList.add("copied");setTimeout(()=>{b.textContent="📋 Copiar";b.classList.remove("copied")},2000)}).catch(()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();document.execCommand("copy");document.body.removeChild(a);b.textContent="✅ Copiado!";setTimeout(()=>{b.textContent="📋 Copiar"},2000)})}</script>
+</body>
+</html>

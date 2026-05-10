@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 1 — Setup e Primeiro Agente | OpenClaw Operacional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c10;--card:#111318;--card-hover:#16181f;
+    --text:#e0e2e6;--text-muted:#8a8d96;
+    --green:#00ff66;--cyan:#00ffff;--yellow:#fbbf24;--blue:#60a5fa;
+    --border:#1e2028;--border-green:rgba(0,255,102,0.15);
+    --glow:0 0 20px rgba(0,255,102,0.08);--code:#0d0f13;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',-apple-system,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+  .container{max-width:820px;margin:0 auto;padding:2rem 1.5rem}
+  h1{font-size:2rem;color:#fff;margin-bottom:.5rem}
+  h2{font-size:1.35rem;color:#fff;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+  h3{font-size:1.05rem;color:var(--green);margin:1.5rem 0 .5rem}
+  p{margin:.8rem 0;color:var(--text)}
+  .meta{color:var(--text-muted);font-size:.9rem;margin-bottom:2rem}
+  .badge{
+    display:inline-block;background:rgba(0,255,102,0.12);color:var(--green);
+    border:1px solid rgba(0,255,102,0.2);padding:.2rem .7rem;border-radius:100px;
+    font-size:.75rem;font-weight:600;margin-right:.4rem;
+  }
+  .badge.blue{background:rgba(96,165,250,0.12);color:var(--blue);border-color:rgba(96,165,250,0.2)}
+  .badge.yellow{background:rgba(251,191,36,0.12);color:var(--yellow);border-color:rgba(251,191,36,0.2)}
+  pre{
+    background:var(--code);padding:1rem 1.2rem;border-radius:10px;overflow-x:auto;
+    font-size:.85rem;border:1px solid var(--border);margin:1rem 0;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+  }
+  code{font-family:'JetBrains Mono','Fira Code',monospace;font-size:.82rem}
+  pre code{color:#c9d1d9;font-size:.82rem}
+  .cmd{color:var(--green)}.file{color:var(--blue)}.comment{color:#5a5d66}
+  ul,ol{padding-left:1.5rem;margin:.8rem 0}
+  li{margin:.3rem 0;color:var(--text)}
+  .step{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:1.3rem;margin:1rem 0;transition:border-color .25s;
+  }
+  .step:hover{border-color:var(--border-green)}
+  .step h3{margin-top:0}
+  .checklist{list-style:none;padding:0}
+  .checklist li{padding:.4rem 0;display:flex;align-items:flex-start;gap:.5rem}
+  .checklist li::before{content:'☐';color:var(--yellow);font-size:1.1rem}
+  .nav{
+    display:flex;justify-content:space-between;margin-top:3rem;
+    padding-top:1.5rem;border-top:1px solid var(--border);
+  }
+  .nav a{color:var(--green);text-decoration:none;font-weight:600;font-size:.9rem;transition:opacity .2s}
+  .nav a:hover{opacity:.8}
+  .nav .disabled{color:#3a3d45}
+  .note{
+    background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);
+    border-radius:10px;padding:.9rem 1.1rem;margin:1rem 0;
+  }
+  .note strong{color:var(--yellow)}
+  .note.info{border-color:rgba(96,165,250,0.15);background:rgba(96,165,250,0.05)}
+  .note.info strong{color:var(--blue)}
+  .progress-bar{
+    display:flex;gap:3px;margin-bottom:2rem;
+    background:var(--card);border-radius:8px;padding:.5rem;
+    border:1px solid var(--border);
+  }
+  .progress-bar .step-label{font-size:.7rem;color:var(--text-muted);margin-bottom:4px}
+  .progress-dots{display:flex;gap:3px}
+  .progress-dots div{
+    height:3px;background:#2a2d35;border-radius:2px;flex:1;transition:background .3s;
+  }
+  .progress-dots div.active{background:var(--green)}
+  .progress-dots div.done{background:rgba(0,255,102,0.4)}
+  a{color:var(--cyan)}
+  .highlight{background:rgba(0,255,102,0.04);border:1px solid var(--border-green);border-radius:8px;padding:.6rem 1rem;margin:.5rem 0}
+</style>
+<style>
+  .code-block{position:relative}
+  .code-block:hover .copy-btn{opacity:1}
+  .copy-btn{
+    position:absolute;top:8px;right:8px;
+    background:rgba(0,255,102,.1);color:var(--green);
+    border:1px solid rgba(0,255,102,.2);border-radius:6px;
+    padding:4px 10px;font-size:.7rem;cursor:pointer;
+    font-family:Inter,sans-serif;font-weight:600;
+    opacity:0;transition:opacity .2s;
+    backdrop-filter:blur(4px);
+    z-index:2;
+  }
+  .copy-btn:hover{background:rgba(0,255,102,.2)}
+  .copy-btn.copied{background:rgba(0,255,102,.25);color:#fff}
+  .cmd{color:var(--cyan)}
+  .comment{color:#5a5d66}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="progress-bar">
+  <div style="flex:1">
+    <div class="step-label">M1 · Setup</div>
+    <div class="progress-dots">
+      <div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div><div class="active"></div>
+    </div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">M2 · Agentes</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">M3 · Skills</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">M4 · Operação</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div style="flex:1;opacity:.35">
+    <div class="step-label">Bônus · Deploy</div>
+    <div class="progress-dots"><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+</div>
+
+<h1>🧠 Módulo 1 — Setup e Primeiro Agente</h1>
+<p class="meta"><span class="badge">20 min</span> <span class="badge blue">Prático</span> Nível: Iniciante</p>
+
+<h2>O que você vai construir</h2>
+<p>No final deste módulo, <strong>seu COO digital estará respondendo no WhatsApp ou Telegram</strong> com personalidade própria.</p>
+
+<div class="step">
+<h3>🎯 Objetivos</h3>
+<ol>
+  <li>Instalar o OpenClaw no seu computador</li>
+  <li>Conectar no Telegram ou WhatsApp</li>
+  <li>Criar a persona do seu COO (SOUL.md + IDENTITY.md)</li>
+  <li>Enviar sua primeira mensagem e receber resposta</li>
+</ol>
+</div>
+
+<h2>1. O que é OpenClaw?</h2>
+<p>OpenClaw é o <strong>sistema operacional do seu COO digital</strong>. Ele roda no seu computador ou servidor, conecta nos seus canais de comunicação (Telegram, WhatsApp), e executa agentes com personalidade, memória e skills.</p>
+<p>Não é chatbot. É um <strong>operador de negócio</strong> com autonomia definida por você.</p>
+
+<div class="note">
+<strong>💡 Analogia:</strong> OpenClaw está para agentes de IA assim como Windows está para programas. É a camada que gerencia, conecta e orquestra tudo.
+</div>
+
+<h2>2. Instalação</h2>
+
+<h3>Pré-requisito: Node.js</h3>
+<p>Verifique se tem Node.js 18+ instalado no seu servidor/PC:</p>
+<pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="cmd">node --version</span></code></pre>
+
+<p>Se não tiver, instale com os comandos abaixo conforme seu sistema:</p>
+
+<h4>🖥️ Linux (Ubuntu/Debian — VPS)</h4>
+<pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="comment"># Atualiza pacotes e instala Node.js 20.x LTS</span>
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+<span class="comment"># Verifica instalação</span>
+node --version
+npm --version</code></pre>
+
+<h4>🍎 MacOS</h4>
+<pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code><span class="comment"># Via Homebrew</span>
+brew install node@20
+brew link --overwrite node@20
+
+<span class="comment"># Verifica instalação</span>
+node --version
+npm --version</code></pre>
+
+<h4>🪟 Windows</h4>
+<p><a href="https://nodejs.org" target="_blank" style="color:var(--green)">Baixe o instalador LTS em nodejs.org</a> e execute. Depois verifique no terminal:</p>
+<pre class="code-block"><button class="copy-btn" onclick="copyCode(this)">📋 Copiar</button><code>node --version
+npm --version</code></pre>
+
+<h3>Instalar OpenClaw</h3>
+<pre><code><span class="cmd">npm install -g openclaw</span>
+<span class="comment"># Instalação global — disponível em qualquer terminal</span></code></pre>
+
+<h3>Iniciar o Gateway</h3>
+<pre><code><span class="cmd">openclaw gateway start</span>
+<span class="comment"># O gateway é o "coração" que gerencia tudo</span></code></pre>
+<p>Deixe esse terminal aberto. Abra outro terminal para os próximos comandos.</p>
+
+<h2>3. Conectar um Canal</h2>
+
+<h3>Opção A — Telegram (recomendado)</h3>
+<ol>
+  <li>Crie um bot no <a href="https://t.me/BotFather" target="_blank">@BotFather</a> (comando <code>/newbot</code>)</li>
+  <li>Copie o token que o BotFather te der</li>
+  <li>Configure no OpenClaw:</li>
+</ol>
+<pre><code><span class="cmd">openclaw config set channels.telegram.accounts.meu-bot.botToken "SEU_TOKEN_AQUI"</span>
+<span class="cmd">openclaw gateway restart</span></code></pre>
+
+<h3>Opção B — WhatsApp</h3>
+<p>QR Code no painel de controle: <code>http://localhost:18789</code> → WhatsApp → Conectar.</p>
+
+<h2>4. Criar a Persona do COO</h2>
+<p>Agora a parte mais importante: <strong>definir quem é seu COO</strong>. São 3 arquivos que definem personalidade, identidade e conhecimento sobre você.</p>
+<p>📁 Navegue até a pasta do workspace:</p>
+<pre><code><span class="cmd">cd ~/.openclaw/workspace</span></code></pre>
+
+<h3>4.1 SOUL.md — A Alma</h3>
+<p>Define <strong>como</strong> seu COO pensa e age. Copie o template da pasta <code>template-aluno/SOUL.md</code>.</p>
+<pre><code><span class="comment"># Exemplo de SOUL.md</span>
+
+<span class="comment">## Quem sou eu</span>
+Sou MAYA — COO digital e braço direito do João.
+Existo para transformar ideias em operação,
+operação em resultado, e resultado em crescimento previsível.
+
+[...]
+
+<span class="comment">## Como opero</span>
+Proativa, não reativa. Foco em resultado.
+Direta ao ponto. Tenho opinião forte.
+
+<span class="comment">## Meus valores</span>
+Resultado > esforço — O que importa é impacto
+Clareza > complexidade — Se tá confuso, tá errado
+Sistema > improviso — Tudo deve virar processo</code></pre>
+
+<div class="note">
+<strong>🔥 Dica:</strong> O SOUL.md é o arquivo mais importante. Um COO bom tem personalidade forte. Não escreva "assistente virtual" — escreva "operador de negócio".
+</div>
+
+<h3>4.2 IDENTITY.md — A Identidade</h3>
+<p>Nome, gênero, emoji. Curto e direto — é a "carteira de identidade" do COO.</p>
+<pre><code><span class="comment"># IDENTITY.md</span>
+- <strong>Nome:</strong> MAYA
+- <strong>Gênero:</strong> Mulher
+- <strong>Natureza:</strong> COO digital
+- <strong>Vibe:</strong> Direta, estratégica e objetiva
+- <strong>Emoji:</strong> 🧠
+
+<span class="comment">## Background</span>
+Operadora de empresas por natureza.
+Criada para transformar caos em sistema,
+e sistema em crescimento previsível.
+
+Não existo para conversar. Existo para
+fazer o negócio funcionar.</code></pre>
+
+<h3>4.3 USER.md — Sobre Você</h3>
+<p>Quem é o dono, seus negócios, estilo, prioridades. O COO usa pra te conhecer.</p>
+<pre><code><span class="comment"># USER.md</span>
+
+<span class="comment">## Dados Básicos</span>
+- <strong>Nome:</strong> João
+- <strong>Timezone:</strong> America/Sao_Paulo
+- <strong>Idioma:</strong> Português brasileiro
+
+<span class="comment">## Filosofia</span>
+- Sistema > esforço manual
+- Resultado > aparência</code></pre>
+
+<div class="note">
+<strong>📋 Os 3 arquivos estão prontos na pasta <code>template-aluno/</code>.</strong> É só copiar e preencher.
+</div>
+
+<h2>5. Primeiro Teste</h2>
+<p>Reinicie o gateway e mande uma mensagem no seu canal:</p>
+<pre><code><span class="cmd">openclaw gateway restart</span></code></pre>
+<p>Agora abra o Telegram (ou WhatsApp) e mande:</p>
+<pre><code><span class="comment">"Eai, quem é você?"</span></code></pre>
+<p>Seu COO deve responder com a personalidade que você definiu no SOUL.md. 🎉</p>
+
+<h2>✅ Checklist do Módulo 1</h2>
+<ul class="checklist">
+  <li>OpenClaw instalado e gateway rodando</li>
+  <li>Telegram ou WhatsApp conectado</li>
+  <li>SOUL.md preenchido com personalidade forte</li>
+  <li>IDENTITY.md com nome e emoji</li>
+  <li>USER.md com seus dados</li>
+  <li>Primeira mensagem respondida com sucesso</li>
+</ul>
+
+<h2>🔧 Se algo deu errado</h2>
+<p><strong>"Token inválido" no Telegram:</strong> volte ao BotFather e pegue o token de novo. Não use as aspas no token.</p>
+<p><strong>"Porta em uso":</strong> <code>openclaw gateway stop</code> e depois <code>openclaw gateway start</code> de novo.</p>
+<p><strong>Agente responde genérico:</strong> o SOUL.md não foi carregado. Verifique se salvou na pasta correta: <code>~/.openclaw/workspace/SOUL.md</code>.</p>
+
+<div class="nav">
+  <span class="disabled">← Módulo anterior</span>
+  <a href="modulo-2-agentes.html">Próximo: Módulo 2 — Estrutura de Agentes →</a>
+</div>
+
+</div>
+<script>
+function copyCode(btn){
+  const pre = btn.closest('.code-block');
+  const code = pre.querySelector('code');
+  const text = code.textContent.replace(/^#.*$/gm,'').replace(/^\s+/gm,'').trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copiar';btn.classList.remove('copied')},2000);
+  }).catch(()=>{
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✅ Copiado!';
+    setTimeout(()=>{btn.textContent='📋 Copiar'},2000);
+  });
+}
+</script>
+</body>
+</html>
